@@ -1,0 +1,45 @@
+﻿
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Create</h2>
+
+<input id="TourId" type="text" value="2" />
+<div class="dropdown">
+    <button class="btn btn-primary" id="selectButton" data-toggle="dropdown">
+        Arrangement
+        <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu scrollable-menu" id="ulGenres">
+        <li>
+            <a href="#" data-pdsa-dropdown-val="1">Item 1</a>
+        </li>
+        <li>
+            <a href="#" data-pdsa-dropdown-val="2">Item 2</a>
+        </li>
+        <li>
+            <a href="#" data-pdsa-dropdown-val="3">Item 3</a>
+        </li>
+    </ul>
+</div>
+
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            //DataLoad();
+            $("#ulGenres li a").on("click", function () {
+                var id = $(this).data('pdsa-dropdown-val');
+                $("#TourId").val(id);
+                var text = $(this).text();
+                $("#selectButton").html(text + '&nbsp;<span class="caret"></span>');
+            });
+            var id = $("#TourId").val();
+            $("#ulGenres li a").filter("[data-pdsa-dropdown-val=" + id + "]").trigger("click");
+        });
+    </script>
+}
+

@@ -1,0 +1,121 @@
+﻿@model Pismovoditel.Models.TaskListModel
+
+@{
+    ViewBag.Title = "Список задач";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Список задач</h2>
+
+<style type="text/css">
+    .dropdown-toggle::after {
+        display: inline-block;
+        width: 0;
+        height: 0;
+        margin-left: .255em;
+        vertical-align: .255em;
+        content: "";
+        border-top: .3em solid;
+        border-right: .3em solid transparent;
+        border-bottom: 0;
+        border-left: .3em solid transparent;
+    }
+
+    .list-group a span {
+        font-size: 12px;
+        display: inline-block;
+        border-width: 1px;
+        padding: 3px;
+    }
+</style>
+
+<p>
+    @Html.ActionLink("Создать задачу", "Create")
+</p>
+
+<div class="dropdown" id="filter">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Фильтр <span id="filter_cnt" class="badge badge-light"></span>
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="padding:3px">
+        @using (Html.BeginForm("Index", "Task", FormMethod.Get))
+        {
+            <input type="hidden" name="time_stamp" value="@DateTime.Now.ToBinary()" />
+            @Html.DropDownListFor(n => n.ProjectId, ViewBag.ProjectList as SelectList, "-", htmlAttributes: new { @class = "form-control" })
+            foreach (var t in Model.statusList)
+            {
+                @Html.CheckBox("st_" + t.ID, t.IsChecked) @t.Name <br />
+            }
+            <input type="submit" value="Применить" class="btn btn-default" />
+        }
+    </div>
+</div>
+
+<div class="list-group">
+    @foreach (var item in Model.tasks)
+    {
+        <a href="/Task/Details/@item.TaskId" class="list-group-item list-group-item-action">
+            
+            <b style="@(item.Status.IsTerminal ? "text-decoration:line-through" : "")">@Html.DisplayFor(modelItem => item.TaskName)</b>
+            <div>
+                <span style="width:100px">
+                    Срок:
+                    @if (item.TillDate.HasValue)
+                    {
+                        <i>@item.TillDate.Value.ToString("dd.MM.yyyy")</i>
+                    }
+                    else
+                    {
+                        <i>Нет</i>;
+                    }
+                </span>
+                <span style="width:100px">@Html.DisplayFor(modelItem => item.Priority.PriorityName)</span>
+                <span style="width:100px">@Html.DisplayFor(modelItem => item.Status.StatusName)</span>
+                <span style="width:100px">@Html.DisplayFor(modelItem => item.TaskType.TaskTypeName)</span>
+                <span>
+                    Исполнитель: @if (item.User1 != null)
+                    {
+                        <i>@item.User1.FIO</i>
+                    }
+                    else
+                    {
+                        <i>Нет</i>
+                    }
+                </span>
+                <span>Автор: @Html.DisplayFor(modelItem => item.User.FIO)</span>
+                <span>
+                    Обновлена:
+                    @if (item.UpdateDate.HasValue)
+                    {
+                        @item.UpdateDate.Value.ToString("dd.MM.yyyy")
+                    }
+                </span>
+            </div>
+        </a>
+    }
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Styles.Render("~/Content/cssjqryUi")
+    @Scripts.Render("~/bundles/jqueryui")
+    
+
+    <script type="text/javascript">
+        function UpdateFilter() {
+            cnt = $('#filter input:checkbox:not(":checked")').length;
+            if ($('#filter select').val()) cnt = cnt + 1;
+            if (cnt > 0)
+                $('#filter_cnt').text("" + cnt);
+            else
+                $('#filter_cnt').hide();
+        }
+
+        $(function () {
+            //$('#filter input:checkbox').change(UpdateFilter);
+            //$('#filter select').change(UpdateFilter);
+            UpdateFilter();
+        });
+
+    </script>
+}

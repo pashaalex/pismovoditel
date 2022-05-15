@@ -1,0 +1,143 @@
+﻿@model Pismovoditel.Models.Task
+
+@{
+    ViewBag.Title = "Редактирование задачи";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<h2>Создать задачу</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Task</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.ProjectId, "ProjectId", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("ProjectId", ViewBag.ProjectList as SelectList, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.ProjectId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.TaskName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.TaskName, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.TaskName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.TaskBody, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextAreaFor(model => model.TaskBody, new { @class = "form-control richtextarea" } )
+                @Html.ValidationMessageFor(model => model.TaskBody, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.TaskExecutorId, "TaskExecutorId", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">                
+                @Html.DropDownList("TaskExecutorId", new SelectList(new string[] { }), htmlAttributes: new { @class = "form-control", mval=Model.TaskExecutorId.HasValue ? Model.TaskExecutorId.Value : -1  })
+                @Html.ValidationMessageFor(model => model.TaskExecutorId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.TillDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @{ Html.EnableClientValidation(false);}
+                @Html.EditorFor(model => model.TillDate, new { htmlAttributes = new { @Value = Model.TillDate.HasValue ? Model.TillDate.Value.ToString("dd.MM.yyyy") : "", @class = "form-control datepicker" } })
+                @{ Html.EnableClientValidation(false);}
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.TaskTypeId, "TaskTypeId", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("TaskTypeId", ViewBag.TaskTypeList as SelectList, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.TaskTypeId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.PriorityId, "PriorityId", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("PriorityId", ViewBag.PriorityList as SelectList, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.PriorityId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.StatusId, "StatusId", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("StatusId", ViewBag.StatusList as SelectList, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.StatusId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Сохранить" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("К списку задач", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Styles.Render("~/Content/cssjqryUi")
+    @Scripts.Render("~/bundles/jqueryui")
+<script src="~/Scripts/tinymce/tinymce.min.js"></script>
+
+    <script type="text/javascript">
+        $('.datepicker').datepicker({
+            dateFormat: "dd.mm.yy",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-3:+3"
+        });
+
+        tinymce.init({
+            selector: '.richtextarea'
+        });
+
+        function updateTaskExecutorId() {
+            projId = $('#ProjectId option').filter(':selected').val();
+            $.ajax
+                ({
+                    url: '/Task/GetActiveUsersForProject/' + projId,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        $('#TaskExecutorId').html("");
+                        $('#TaskExecutorId').append("<option value=\"\">---</option>");
+                        selectedVal = $('#TaskExecutorId').attr("mval");                        
+                        $(data).each(function (index, item) {
+                            $('#TaskExecutorId').append("<option value=\"" + item.ID + "\" " + (selectedVal == item.ID ? "selected" : "") + ">" + item.FIO + "</option>")
+                        });
+                    }
+                });
+        }
+
+        $(function () {
+            updateTaskExecutorId();
+            $('#ProjectId').change(updateTaskExecutorId);
+            $('#TaskExecutorId').change(function () {
+                userId = $('#TaskExecutorId option').filter(':selected').val();
+                $('#TaskExecutorId').attr("mval", userId);
+            });
+        });
+    </script>
+}

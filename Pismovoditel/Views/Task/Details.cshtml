@@ -1,0 +1,168 @@
+﻿@model Pismovoditel.Models.TaskDetail
+@using Pismovoditel.Logic
+@{
+    ViewBag.Title = "Описание задачи";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <div>Создал(а) @Html.DisplayFor(model => model.task.User.Login) @Html.DisplayFor(model => model.task.CreateDate)</div>
+    <div>Обновлена @Html.DisplayFor(model => model.task.UpdateDate)</div>
+    <h4>@Html.DisplayFor(model => model.task.TaskName)</h4>
+    <hr />
+
+    <div>
+        <div style="display: inline-block; width: calc(100% - 250px); vertical-align:top; }">
+            @Html.Raw(Model.task.TaskBody)
+        </div>
+        <div style="display: inline-block; width: 240px; border-style:dashed; border-color:lightgray; border-width:1px; vertical-align:top; padding:10px;">
+            @using (Html.BeginForm("DetailsChange", "Task", new { id = ViewBag.id }, FormMethod.Post))
+            {
+            <table>
+                <tr><td>Статус</td>
+                <tr>
+                <tr><td>@Html.DropDownListFor(model => model.task.StatusId, ViewBag.StatusList as SelectList, htmlAttributes: new { @class = "form-control" })</td></tr>
+
+                <tr><td>Срок выполнения</td>
+                <tr>
+                <tr><td>
+    @{ Html.EnableClientValidation(false);}
+    @Html.EditorFor(model => model.task.TillDate, new { htmlAttributes = new { @Value = Model.task.TillDate.HasValue ? Model.task.TillDate.Value.ToString("dd.MM.yyyy") : "", @class = "form-control datepicker" } })
+    @{ Html.EnableClientValidation(false);}
+</td></tr>
+
+                <tr><td>Приоритет задачи</td>
+                <tr>
+                <tr><td>@Html.DropDownListFor(model => model.task.PriorityId, ViewBag.PriorityList as SelectList, htmlAttributes: new { @class = "form-control" })</td></tr>
+
+                <tr><td>Проект</td>
+                <tr>
+                <tr><td>@Html.DropDownListFor(model => model.task.ProjectId, ViewBag.ProjectList as SelectList, htmlAttributes: new { @class = "form-control" })</td></tr>
+
+                <tr><td>Исполнитель</td>
+                <tr>
+                <tr><td>@Html.DropDownList("task.TaskExecutorId", new SelectList(new string[] { }), htmlAttributes: new { @class = "form-control", mval = Model.task.TaskExecutorId.HasValue ? Model.task.TaskExecutorId.Value : -1 })</td></tr>
+
+                <tr><td>Тип задачи</td>
+                <tr>
+                <tr><td>@Html.DropDownListFor(model => model.task.TaskTypeId, ViewBag.TaskTypeList as SelectList, htmlAttributes: new { @class = "form-control" })</td></tr>
+
+                <tr><td>Приоритет</td>
+                <tr>
+                <tr><td>@Html.DropDownListFor(model => model.task.PriorityId, ViewBag.PriorityList as SelectList, htmlAttributes: new { @class = "form-control" })</td></tr>
+            </table>
+            <input type="submit" value="Изменить" class="btn btn-default" />
+            }
+        </div>
+    </div>
+</div>
+
+
+<p>
+    @Html.ActionLink("Редактировать задачу", "Edit", new { id = Model.task.TaskId }) |
+    @Html.ActionLink("Вернуться к списку задач", "Index")
+</p>
+
+@using (Html.BeginForm("AddComment", "Task", new { id = ViewBag.id }, FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Коментарий</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+        <div class="form-group">
+            @Html.TextAreaFor(model => model.comment.CommentText, new { @class = "form-control richtextarea" })
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Добавить комментарий" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+
+<div>
+    <h4>Комментарии</h4>
+
+    <hr />
+    <table class="table">
+        @foreach (var item in Model.logItems)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EventDate)  <b><i>@Html.DisplayFor(modelItem => item.ActorFIO)</i></b>
+    @if (item.ChangeObjectName == null)
+    {
+        <span>оставил комментарий</span>
+        <br />
+        @Html.Raw(item.RawHTML)
+    }
+    else
+    {
+        <span>изменил</span>
+        @Html.DisplayFor(modelItem => item.ChangeObjectName)
+        <span>с</span>
+        <b><i>@Html.DisplayFor(modelItem => item.ChangeFrom)</i></b>
+        <span>на</span>
+        <b><i>@Html.DisplayFor(modelItem => item.ChangeTo)</i></b>
+    }
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Styles.Render("~/Content/cssjqryUi")
+    @Scripts.Render("~/bundles/jqueryui")
+    <script src="~/Scripts/tinymce/tinymce.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            tinymce.init({
+                selector: '.richtextarea'
+            });
+
+            $('.datepicker').datepicker({
+                dateFormat: "dd.mm.yy",
+                changeMonth: true,
+                changeYear: true,
+                yearRange: "-3:+3"
+            });
+        });
+
+        function updateTaskExecutorId() {
+            projId = $('#task_ProjectId option').filter(':selected').val();
+            $.ajax
+                ({
+                    url: '/Task/GetActiveUsersForProject/' + projId,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        $('#task_TaskExecutorId').html("");
+                        $('#task_TaskExecutorId').append("<option value=\"\">---</option>");
+                        selectedVal = $('#task_TaskExecutorId').attr("mval");
+                        $(data).each(function (index, item) {
+                            $('#task_TaskExecutorId').append("<option value=\"" + item.ID + "\" " + (selectedVal == item.ID ? "selected" : "") + ">" + item.FIO + "</option>")
+                        });
+                    }
+                });
+        }
+
+        $(function () {
+            updateTaskExecutorId();
+            $('#task_ProjectId').change(updateTaskExecutorId);
+            $('#task_TaskExecutorId').change(function () {
+                userId = $('#task_TaskExecutorId option').filter(':selected').val();
+                $('#task_TaskExecutorId').attr("mval", userId);
+            });
+        });
+    </script>
+}

@@ -1,0 +1,44 @@
+﻿@model IEnumerable<Pismovoditel.Models.Project>
+
+@{
+    ViewBag.Title = "Список проектов";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Создать новый проект", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            Наименование проекта
+        </th>
+        <th>
+            Сокращённое наименование проекта
+        </th>
+        <th>
+            Активен
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.ProjectName)            
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.ProjectShortName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IsActive)
+        </td>
+        <td>
+            @Html.ActionLink("Редактировать", "Edit", new { id=item.ProjectId })
+        </td>
+    </tr>
+}
+
+</table>

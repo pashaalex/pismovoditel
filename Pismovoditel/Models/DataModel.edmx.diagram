@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="32120f1caddd45d8bb87bd57aca3fa9d" Name="Diagram1">
+        <EntityTypeShape EntityType="PismovoditelModel.User" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="PismovoditelModel.Workspace" Width="1.5" PointX="0.75" PointY="1.5" IsExpanded="true" />
+        <AssociationConnector Association="PismovoditelModel.FK_User_Workspace" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="PismovoditelModel.Priority" Width="1.5" PointX="5.375" PointY="5.375" />
+        <EntityTypeShape EntityType="PismovoditelModel.Project" Width="1.5" PointX="0.75" PointY="4.25" />
+        <EntityTypeShape EntityType="PismovoditelModel.Status" Width="1.5" PointX="7.875" PointY="0.5" />
+        <EntityTypeShape EntityType="PismovoditelModel.Task" Width="1.5" PointX="5.375" PointY="0.5" />
+        <EntityTypeShape EntityType="PismovoditelModel.TaskType" Width="1.5" PointX="7.875" PointY="2.75" />
+        <AssociationConnector Association="PismovoditelModel.FK_Task_Priority" />
+        <AssociationConnector Association="PismovoditelModel.FK_Project_Workspace" />
+        <AssociationConnector Association="PismovoditelModel.FK_Task_Status" />
+        <AssociationConnector Association="PismovoditelModel.FK_Task_TaskType" />
+        <AssociationConnector Association="PismovoditelModel.FK_Task_User" />
+        <AssociationConnector Association="PismovoditelModel.FK_Task_User1" />
+        <AssociationConnector Association="PismovoditelModel.FK_Task_Project" />
+        <EntityTypeShape EntityType="PismovoditelModel.Comment" Width="1.5" PointX="7.625" PointY="6.375" />
+        <AssociationConnector Association="PismovoditelModel.FK_Comment_Task" />
+        <AssociationConnector Association="PismovoditelModel.FK_Comment_User" />
+        <EntityTypeShape EntityType="PismovoditelModel.TaskLog" Width="1.5" PointX="10.125" PointY="1.75" />
+        <AssociationConnector Association="PismovoditelModel.FK_Task_Priority2" />
+        <AssociationConnector Association="PismovoditelModel.FK_Task_Project2" />
+        <AssociationConnector Association="PismovoditelModel.FK_Task_Status2" />
+        <AssociationConnector Association="PismovoditelModel.FK_Task_TaskType2" />
+        <AssociationConnector Association="PismovoditelModel.FK_Task_User12" />
+        <AssociationConnector Association="PismovoditelModel.FK_TaskLog_User" />
+        <EntityTypeShape EntityType="PismovoditelModel.TaskEventLog" Width="1.5" PointX="0.75" PointY="7.75" />
+        <EntityTypeShape EntityType="PismovoditelModel.ProjectUser" Width="1.5" PointX="10.25" PointY="7.875" />
+        <AssociationConnector Association="PismovoditelModel.FK_ProjectUser_Project" />
+        <AssociationConnector Association="PismovoditelModel.FK_ProjectUser_User" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
