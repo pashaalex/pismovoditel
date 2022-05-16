@@ -41,7 +41,10 @@
         @using (Html.BeginForm("Index", "Task", FormMethod.Get))
         {
             <input type="hidden" name="time_stamp" value="@DateTime.Now.ToBinary()" />
-            @Html.DropDownListFor(n => n.ProjectId, ViewBag.ProjectList as SelectList, "-", htmlAttributes: new { @class = "form-control" })
+            <div>Проект:</div>
+            @Html.DropDownListFor(n => n.ProjectId, ViewBag.ProjectList as SelectList, "-", htmlAttributes: new { @class = "form-control projId" })
+            <div>Исполнитель:</div>
+            @Html.DropDownListFor(n => n.TaskExecutorId, ViewBag.UserList as SelectList, "-", htmlAttributes: new { @class = "form-control executorId" })
             foreach (var t in Model.statusList)
             {
                 @Html.CheckBox("st_" + t.ID, t.IsChecked) @t.Name <br />
@@ -49,6 +52,8 @@
             <input type="submit" value="Применить" class="btn btn-default" />
         }
     </div>
+    <a class="btn btn-secondary" href="@ViewBag.NotFinishedLink">Не завершены</a>
+    <a class="btn btn-secondary" href="@ViewBag.NotFinishedLink_ForMe">Назначены на меня и не завершены</a>
 </div>
 
 <div class="list-group">
@@ -104,7 +109,8 @@
     <script type="text/javascript">
         function UpdateFilter() {
             cnt = $('#filter input:checkbox:not(":checked")').length;
-            if ($('#filter select').val()) cnt = cnt + 1;
+            if ($('.projId').val()) cnt = cnt + 1;
+            if ($('.executorId').val()) cnt = cnt + 1;
             if (cnt > 0)
                 $('#filter_cnt').text("" + cnt);
             else
@@ -112,8 +118,6 @@
         }
 
         $(function () {
-            //$('#filter input:checkbox').change(UpdateFilter);
-            //$('#filter select').change(UpdateFilter);
             UpdateFilter();
         });
 

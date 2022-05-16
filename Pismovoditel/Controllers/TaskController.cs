@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Data.Entity;
+using System.Text;
 
 
 namespace Pismovoditel.Controllers
@@ -21,12 +22,16 @@ namespace Pismovoditel.Controllers
                 int projectId = 0;
                 if (Request["ProjectId"] != null) int.TryParse(Request["ProjectId"], out projectId);
 
+                int taskExecutorId = 0;
+                if (Request["TaskExecutorId"] != null) int.TryParse(Request["TaskExecutorId"], out taskExecutorId);
+
                 var t = new Models.TaskListModel();
                 t.ProjectId = projectId;
+                t.TaskExecutorId = taskExecutorId;
                 var l = db.Status.ToList();
-                t.statusList = l.Select(n => new Models.CheckBoxItem() { ID = n.StatusId, Name = n.StatusName }).ToList();
+                t.statusList = l.Select(n => new Models.CheckBoxItem() { ID = n.StatusId, Name = n.StatusName }).ToList();                
                 foreach (var i in t.statusList)                
-                    i.IsChecked = Request["st_" + i.ID] != "false";
+                    i.IsChecked = Request["st_" + i.ID] != "false";                
 
                 List<int> aa = t.statusList.Where(n => n.IsChecked).Select(n => n.ID).ToList();
 
@@ -42,11 +47,21 @@ namespace Pismovoditel.Controllers
                     .ToList();
 
                 t.tasks = t.tasks.Where(n => n.ProjectId == projectId || projectId == 0)
+                    .Where(n => n.TaskExecutorId == taskExecutorId || taskExecutorId == 0)
                     .Where(n => aa.Contains(n.StatusId.Value))
                     .OrderByDescending(n => n.UpdateDate)
                     .ToList();
 
                 ViewBag.ProjectList = new SelectList(db.Projects.ToList(), "ProjectId", "ProjectName");
+                ViewBag.UserList = new SelectList(db.User.Where(n => n.WorkspaceId == workspaceId).ToList(), "UserId", "FIO");
+
+                string not_finished = "/Task/Index?" + string.Join("&",
+                db.Status.Where(n => n.IsTerminal).ToList()
+                    .Select(n => "st_" + n.StatusId + "=false")
+                    .ToArray());
+                ViewBag.NotFinishedLink = not_finished;
+
+                ViewBag.NotFinishedLink_ForMe = not_finished + "&TaskExecutorId=" + Logic.Security.GetCurrentUser().UserId;
 
                 return View(t);
             }            
