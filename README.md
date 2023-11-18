@@ -1,4 +1,4 @@
 # pismovoditel
 asp.net task tracker
-<img src="./Pismovoditel.emf" />
+<img src="./Pismovoditel.png" />
 Database structure
