@@ -28,7 +28,9 @@
 
                     @if (Session["CurrentLogin"] != null)
                     {
+                        if(Pismovoditel.Logic.Security.IsUserAdmin()) {
                         <li>@Html.ActionLink("Пользователи", "Index", "UserListEdit")</li>
+                        }
                         <li>@Html.ActionLink("Проекты", "Index", "Project")</li>
                         <li>@Html.ActionLink("Задачи", "Index", "Task")</li>
                         <li>

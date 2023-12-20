@@ -7,9 +7,11 @@
 
 <h2>Index</h2>
 
-<p>
-    @Html.ActionLink("Создать новый проект", "Create")
-</p>
+@if(Pismovoditel.Logic.Security.IsUserAdmin()) {
+    <p>
+        @Html.ActionLink("Создать новый проект", "Create")
+    </p>
+}
 <table class="table">
     <tr>
         <th>
@@ -24,21 +26,23 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.ProjectName)            
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ProjectShortName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.IsActive)
-        </td>
-        <td>
-            @Html.ActionLink("Редактировать", "Edit", new { id=item.ProjectId })
-        </td>
-    </tr>
-}
+    @foreach(var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProjectName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProjectShortName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsActive)
+            </td>
+            <td>
+                @if(Pismovoditel.Logic.Security.IsUserAdmin()) {
+                    @Html.ActionLink("Редактировать", "Edit", new { id = item.ProjectId })
+                }
+            </td>
+        </tr>
+    }
 
 </table>

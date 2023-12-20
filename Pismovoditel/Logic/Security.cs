@@ -20,6 +20,10 @@ namespace Pismovoditel.Logic
             return sb.ToString();            
         }
 
+        public static bool IsUserAdmin() {
+            return GetCurrentUser()?.IsWorkspaceAdmin ?? false;
+        }
+
         public static Models.User GetCurrentUser()
         {
             object o = HttpContext.Current.Session["CurrentUser"];
